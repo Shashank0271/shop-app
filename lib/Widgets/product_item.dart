@@ -13,6 +13,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GridTile(
       child: Image.network(imageUrl),
+      footer: GridTileBar(title: Text(title)),
     );
   }
 }
