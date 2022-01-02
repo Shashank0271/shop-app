@@ -20,9 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (BuildContext context) {
-        return Products();
-      },
+      create: (ctx) => Products(),
       child: MaterialApp(
         theme: ThemeData(
           fontFamily: 'Lato',

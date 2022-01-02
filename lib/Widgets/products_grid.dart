@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:my_shop_app/Models/product.dart';
 import 'package:my_shop_app/Provider/products_provider.dart';
 import 'package:my_shop_app/Widgets/product_item.dart';
 import 'package:provider/provider.dart';
 
 class ProductsGrid extends StatelessWidget {
+  const ProductsGrid({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final productsData = Provider.of<Products>(context);
@@ -19,11 +20,9 @@ class ProductsGrid extends StatelessWidget {
         ),
         itemCount: loadedProducts.length,
         itemBuilder: (BuildContext context, int index) {
-          Product currentProduct = loadedProducts[index];
-          return ProductItem(
-            title: currentProduct.title,
-            id: currentProduct.title,
-            imageUrl: currentProduct.imageUrl,
+          return ChangeNotifierProvider.value(
+            value: loadedProducts[index],
+            child: ProductItem(),
           );
         });
   }
