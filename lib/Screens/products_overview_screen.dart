@@ -9,8 +9,14 @@ enum FilterOptions {
   all,
 }
 
-class ProductsOverviewScreen extends StatelessWidget {
+class ProductsOverviewScreen extends StatefulWidget {
+  @override
+  State<ProductsOverviewScreen> createState() => _ProductsOverviewScreenState();
+}
+
+class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _showOnlyFavorites = false;
+
   @override
   Widget build(BuildContext context) {
     final productsContainer = Provider.of<Products>(context);
@@ -20,11 +26,13 @@ class ProductsOverviewScreen extends StatelessWidget {
         actions: [
           PopupMenuButton(
               onSelected: (FilterOptions selectedValue) {
-                if (selectedValue == FilterOptions.favorites) {
-                  _showOnlyFavorites = true;
-                } else if (selectedValue == FilterOptions.all) {
-                  _showOnlyFavorites = false;
-                }
+                setState(() {
+                  if (selectedValue == FilterOptions.favorites) {
+                    _showOnlyFavorites = true;
+                  } else if (selectedValue == FilterOptions.all) {
+                    _showOnlyFavorites = false;
+                  }
+                });
               },
               icon: const Icon(
                 Icons.more_vert,
