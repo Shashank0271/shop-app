@@ -10,7 +10,7 @@ enum FilterOptions {
 }
 
 class ProductsOverviewScreen extends StatelessWidget {
-  const ProductsOverviewScreen({Key? key}) : super(key: key);
+  var _showOnlyFavorites = false;
   @override
   Widget build(BuildContext context) {
     final productsContainer = Provider.of<Products>(context);
@@ -21,24 +21,24 @@ class ProductsOverviewScreen extends StatelessWidget {
           PopupMenuButton(
               onSelected: (FilterOptions selectedValue) {
                 if (selectedValue == FilterOptions.favorites) {
-                  productsContainer.showFavoritesOnly();
+                  _showOnlyFavorites = true;
                 } else if (selectedValue == FilterOptions.all) {
-                  productsContainer.showAll();
+                  _showOnlyFavorites = false;
                 }
               },
               icon: const Icon(
                 Icons.more_vert,
               ),
               itemBuilder: (cntx) => [
-                    PopupMenuItem(
+                    const PopupMenuItem(
                         child: Text('Only Favorites'),
                         value: FilterOptions.favorites),
-                    PopupMenuItem(
+                    const PopupMenuItem(
                         child: Text('Show All'), value: FilterOptions.all),
                   ]),
         ],
       ),
-      body: ProductsGrid(),
+      body: ProductsGrid(_showOnlyFavorites),
     );
   }
 }
