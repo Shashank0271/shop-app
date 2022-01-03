@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_shop_app/Screens/products_overview_screen.dart';
@@ -5,6 +6,7 @@ import 'package:my_shop_app/Screens/product_details_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:my_shop_app/Provider/products_provider.dart';
 import 'package:my_shop_app/Provider/cart.dart';
+import 'package:my_shop_app/Screens/cart_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,14 +28,18 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => Cart()),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          fontFamily: 'Lato',
-          colorScheme: ColorScheme.fromSwatch(
-              primarySwatch: Colors.purple, accentColor: Colors.orange),
-        ),
+            fontFamily: 'Lato',
+            colorScheme: ColorScheme.fromSwatch(
+                primarySwatch: Colors.purple, accentColor: Colors.orange),
+            textTheme: const TextTheme(
+              headline6: TextStyle(color: Colors.white),
+            )),
         home: ProductsOverviewScreen(),
         routes: {
           ProductDetailsScreen.routeName: (context) => ProductDetailsScreen(),
+          CartScreen.routeName: (context) => CartScreen(),
         },
       ),
     );
