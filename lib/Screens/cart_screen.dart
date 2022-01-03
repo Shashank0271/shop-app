@@ -24,6 +24,7 @@ class CartScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text('Total', style: TextStyle(fontSize: 20)),
+                  const Spacer(),
                   Chip(
                     label: Text(
                       cart.totalAmount.toString(),
@@ -45,13 +46,15 @@ class CartScreen extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Expanded(
-              child: ListView.builder(
-                  itemCount: cart.numberOfItems,
-                  itemBuilder: (context, index) => ci.CartItem(
-                      id: cart.items[index]!.id,
-                      title: cart.items[index]!.title,
-                      price: cart.items[index]!.price,
-                      quantity: cart.items[index]!.quantity))),
+            child: ListView.builder(
+              itemCount: cart.numberOfItems,
+              itemBuilder: (context, index) => ci.CartItem(
+                  id: cart.items[index]!.id,
+                  title: cart.items[index]!.title,
+                  price: cart.items[index]!.price,
+                  quantity: cart.items[index]!.quantity),
+            ),
+          ),
         ],
       ),
     );
