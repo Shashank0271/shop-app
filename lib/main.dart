@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:my_shop_app/Provider/products_provider.dart';
 import 'package:my_shop_app/Provider/cart.dart';
 import 'package:my_shop_app/Screens/cart_screen.dart';
+import 'package:my_shop_app/Provider/orders.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,10 +24,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => Products()),
-        ChangeNotifierProvider(create: (context) => Cart()),
-      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
@@ -36,12 +33,17 @@ class MyApp extends StatelessWidget {
             textTheme: const TextTheme(
               headline6: TextStyle(color: Colors.white),
             )),
-        home: ProductsOverviewScreen(),
+        home: const ProductsOverviewScreen(),
         routes: {
           ProductDetailsScreen.routeName: (context) => ProductDetailsScreen(),
           CartScreen.routeName: (context) => CartScreen(),
         },
       ),
+      providers: [
+        ChangeNotifierProvider(create: (context) => Products()),
+        ChangeNotifierProvider(create: (context) => Cart()),
+        ChangeNotifierProvider(create: (context) => Orders()),
+      ],
     );
   }
 }
