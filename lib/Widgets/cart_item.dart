@@ -4,11 +4,11 @@ import 'package:provider/provider.dart';
 
 class CartItem extends StatelessWidget {
   final String id;
-  final double price;
-  final int quantity;
   final String title;
+  final int quantity;
+  final double price;
   final String productId;
-  CartItem(
+  const CartItem(
       {required this.id,
       required this.title,
       required this.productId,
@@ -17,7 +17,7 @@ class CartItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      onDismissed: (direc) {
+      onDismissed: (direction) {
         Provider.of<Cart>(context, listen: false).removeItem(productId);
       },
       key: ValueKey(id),

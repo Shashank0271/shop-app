@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:my_shop_app/Widgets/order_item_widget.dart';
 import '/Provider/orders.dart';
+import 'package:my_shop_app/Widgets/app_drawer.dart';
 
 class OrdersScreen extends StatelessWidget {
+  static const routeName = '/orders-screen';
   const OrdersScreen({Key? key}) : super(key: key);
 
   @override
@@ -17,6 +19,7 @@ class OrdersScreen extends StatelessWidget {
           order: orderItemData.orders[index],
         ),
       ),
+      drawer: const AppDrawer(),
     );
   }
 }

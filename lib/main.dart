@@ -8,6 +8,7 @@ import 'package:my_shop_app/Provider/products_provider.dart';
 import 'package:my_shop_app/Provider/cart.dart';
 import 'package:my_shop_app/Screens/cart_screen.dart';
 import 'package:my_shop_app/Provider/orders.dart';
+import 'package:my_shop_app/Screens/orders_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
         routes: {
           ProductDetailsScreen.routeName: (context) => ProductDetailsScreen(),
           CartScreen.routeName: (context) => CartScreen(),
+          OrdersScreen.routeName: (context) => OrdersScreen(),
         },
       ),
       providers: [
