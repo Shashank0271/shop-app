@@ -55,7 +55,24 @@ class Cart with ChangeNotifier {
   }
 
   void removeItem(String productId) {
+    ///called when the product is dismissed from the cart screen
     _items.remove(productId);
+    notifyListeners();
+  }
+
+  void undoRemove(String id) {
+    if (_items[id]!.quantity > 1) {
+      _items.update(
+        id,
+        (existingCartItem) => CartItem(
+            id: existingCartItem.id,
+            quantity: existingCartItem.quantity - 1,
+            price: existingCartItem.price,
+            title: existingCartItem.title),
+      );
+    } else {
+      _items.remove(id);
+    }
     notifyListeners();
   }
 
