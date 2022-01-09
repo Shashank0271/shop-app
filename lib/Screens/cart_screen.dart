@@ -28,7 +28,7 @@ class CartScreen extends StatelessWidget {
                   const Spacer(),
                   Chip(
                     label: Text(
-                      cart.totalAmount.toString(),
+                      cart.totalAmount.toStringAsFixed(2),
                       style: Theme.of(context).textTheme.headline6,
                     ),
                     backgroundColor: Theme.of(context).colorScheme.primary,
