@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:my_shop_app/Provider/products_provider.dart';
 import 'package:my_shop_app/Widgets/app_drawer.dart';
+import 'edit_products_screen.dart';
 
 class UserProductsScreen extends StatelessWidget {
   static const routeName = '/user-products';
@@ -16,6 +17,7 @@ class UserProductsScreen extends StatelessWidget {
           IconButton(
             onPressed: () {
               ///enables the user to add an item
+              Navigator.of(context).pushNamed(EditProductsScreen.routeName);
             },
             icon: const Icon(Icons.add),
           ),
