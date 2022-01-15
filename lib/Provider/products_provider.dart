@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:my_shop_app/Provider/product.dart';
 
 class Products with ChangeNotifier {
-  List<Product> _items = [
+  final List<Product> _items = [
     Product(
       id: 'p1',
       title: 'Red Shirt',
@@ -48,8 +48,33 @@ class Products with ChangeNotifier {
     return _items.firstWhere((element) => element.id == id);
   }
 
-  void addProduct() {
-    //_items.add(value);
+  void addProduct(Product value) {
+    _items.add(Product(
+      imageUrl: value.imageUrl,
+      description: value.description,
+      title: value.title,
+      price: value.price,
+      isFavorite: value.isFavorite,
+      id: DateTime.now().toString(),
+    ));
+    notifyListeners();
+  }
+
+  void updateProduct(String id, Product modifiedProduct) {
+    int modIndex = _items.indexWhere((element) => element.id == id);
+    _items[modIndex] = Product(
+      id: id,
+      title: modifiedProduct.title,
+      description: modifiedProduct.description,
+      price: modifiedProduct.price,
+      imageUrl: modifiedProduct.imageUrl,
+      isFavorite: modifiedProduct.isFavorite,
+    );
+    notifyListeners();
+  }
+
+  void deleteProduct(String id) {
+    _items.removeWhere((element) => element.id == id);
     notifyListeners();
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_shop_app/Provider/product.dart';
 import 'package:my_shop_app/Provider/products_provider.dart';
+import 'package:provider/provider.dart';
 
 class EditProductsScreen extends StatefulWidget {
   static const routeName = '/edit-products';
@@ -11,14 +12,21 @@ class EditProductsScreen extends StatefulWidget {
 }
 
 class _EditProductsScreenState extends State<EditProductsScreen> {
+  final _imageUrlController = TextEditingController();
   final _priceFocusNode = FocusNode();
   final _descriptionFocusNode = FocusNode();
-  final _imageUrlController = TextEditingController();
   final _imageUrlFocusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
   var _editedProduct =
-      Product(title: "", imageUrl: "", id: "", description: "", price: 0);
-
+      Product(title: " ", imageUrl: " ", id: null, description: " ", price: 0);
+  var _isinit = true;
+  var _initValues = {
+    'title': ' ',
+    'imageUrl': ' ',
+    'id': ' ',
+    'description': ' ',
+    'price': ' ',
+  };
   @override
   void dispose() {
     super.dispose();
@@ -30,13 +38,50 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
   }
 
   @override
+  void deactivate() {
+    super.deactivate();
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isinit) {
+      var forWardedId = ModalRoute.of(context)!.settings.arguments;
+      if (forWardedId != null) {
+        _editedProduct = Provider.of<Products>(context, listen: false)
+            .findById(forWardedId.toString());
+        _initValues = {
+          'title': _editedProduct.title,
+          'id': _editedProduct.id,
+          'price': _editedProduct.price.toString(),
+          'description': _editedProduct.description,
+          // 'imageUrl': _editedProduct.imageUrl,
+          'imageUrl': '',
+        };
+        _imageUrlController.text = _editedProduct.imageUrl;
+      }
+    }
+    _isinit = !_isinit;
+  }
+
+  @override
   initState() {
     super.initState();
     _imageUrlFocusNode.addListener(_updateImageUrl);
   }
 
   void _updateImageUrl() {
+    //i.e only update the preview when the url is valid
     if (!_imageUrlFocusNode.hasFocus) {
+      String value = _imageUrlController.text;
+      if (value.isEmpty) {
+        return;
+      } else if (!value.startsWith('http') && !value.startsWith('https')) {
+        return;
+      } else if (!value.endsWith('png') && !value.endsWith('jpg')) {
+        return;
+      }
       setState(() {});
     }
   }
@@ -56,6 +101,15 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
     _formKey.currentState!.save();
 
     ///triggers a method on every textFormField , i.e. the onSaved function
+    /// first validate , then save !
+    if (_editedProduct.id == null) {
+      Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+    } else {
+      ///update existing
+      Provider.of<Products>(context, listen: false)
+          .updateProduct(_editedProduct.id, _editedProduct);
+    }
+    Navigator.of(context).pop();
   }
 
   @override
@@ -80,6 +134,7 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
                 child: Column(
                   children: [
                     TextFormField(
+                      initialValue: _initValues['title'],
                       decoration: const InputDecoration(labelText: 'Title'),
                       textInputAction: TextInputAction.next,
                       onFieldSubmitted: (value) {
@@ -92,6 +147,7 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
                           description: _editedProduct.description,
                           imageUrl: _editedProduct.imageUrl,
                           id: _editedProduct.id,
+                          isFavorite: _editedProduct.isFavorite,
                         );
                       },
                       validator: (value) {
@@ -102,6 +158,7 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
                       },
                     ),
                     TextFormField(
+                      initialValue: _initValues['price'],
                       decoration: const InputDecoration(labelText: 'Price'),
                       textInputAction: TextInputAction.next,
                       keyboardType: TextInputType.number,
@@ -117,10 +174,22 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
                           description: _editedProduct.description,
                           imageUrl: _editedProduct.imageUrl,
                           id: _editedProduct.id,
+                          isFavorite: _editedProduct.isFavorite,
                         );
+                      },
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter the price !';
+                        } else if (double.tryParse(value) == null) {
+                          return 'Please enter suitable price';
+                        } else if (double.parse(value) <= 0) {
+                          return 'Please enter a price greater than 0!';
+                        }
+                        return null;
                       },
                     ),
                     TextFormField(
+                      initialValue: _initValues['description'],
                       decoration:
                           const InputDecoration(labelText: 'Description'),
                       maxLines: 3,
@@ -133,10 +202,20 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
                           description: value as String,
                           imageUrl: _editedProduct.imageUrl,
                           id: _editedProduct.id,
+                          isFavorite: _editedProduct.isFavorite,
                         );
+                      },
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter a description!';
+                        } else if (value.length < 10) {
+                          return 'Description should be at least 10 characters long!';
+                        }
+                        return null;
                       },
                     ),
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Container(
                           margin: const EdgeInsets.only(top: 8, right: 10),
@@ -150,9 +229,11 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
                           child: _imageUrlController.text.isEmpty
                               ? const Text('Enter a url')
                               : FittedBox(
-                                  child:
-                                      Image.network(_imageUrlController.text),
-                                  fit: BoxFit.cover,
+                                  child: _formKey.currentState != null &&
+                                          _formKey.currentState!.validate()
+                                      ? Image.network(_imageUrlController.text)
+                                      : Container(),
+                                  fit: BoxFit.contain,
                                 ),
                         ),
                         Expanded(
@@ -168,7 +249,6 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
                               setState(() {});
                             },
                             onFieldSubmitted: (_) {
-                              _saveForm;
                               FocusManager.instance.primaryFocus?.unfocus();
                             },
                             onSaved: (value) {
@@ -178,7 +258,20 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
                                 description: _editedProduct.description,
                                 imageUrl: value as String,
                                 id: _editedProduct.id,
+                                isFavorite: _editedProduct.isFavorite,
                               );
+                            },
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Please enter an image Url!';
+                              } else if (!value.startsWith('http') &&
+                                  !value.startsWith('https')) {
+                                return 'Invalid Url !';
+                              } else if (!value.endsWith('png') &&
+                                  !value.endsWith('jpg')) {
+                                return 'Invalid Url !';
+                              }
+                              return null;
                             },
                           ),
                         ),

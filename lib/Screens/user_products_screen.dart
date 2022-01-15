@@ -8,7 +8,7 @@ class UserProductsScreen extends StatelessWidget {
   static const routeName = '/user-products';
   @override
   Widget build(BuildContext context) {
-    var productData = Provider.of<Products>(context, listen: false);
+    var productData = Provider.of<Products>(context, listen: true);
     return Scaffold(
       drawer: const AppDrawer(),
       appBar: AppBar(
@@ -25,7 +25,7 @@ class UserProductsScreen extends StatelessWidget {
       ),
       body: ListView.builder(
         itemCount: productData.items.length,
-        itemBuilder: (_, index) => ListTile(
+        itemBuilder: (context, index) => ListTile(
           title: Text(productData.items[index].title),
           leading: CircleAvatar(
             backgroundImage: NetworkImage(productData.items[index].imageUrl),
@@ -35,14 +35,21 @@ class UserProductsScreen extends StatelessWidget {
             child: Row(
               children: [
                 IconButton(
-                  onPressed: null,
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      EditProductsScreen.routeName,
+                      arguments: productData.items[index].id,
+                    );
+                  },
                   icon: const Icon(Icons.edit),
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 IconButton(
-                  onPressed: null,
-                  icon: const Icon(Icons.delete),
-                  color: Theme.of(context).errorColor,
+                  onPressed: () {
+                    productData.deleteProduct(productData.items[index].id);
+                  },
+                  icon: Icon(Icons.delete, color: Theme.of(context).errorColor),
                 ),
               ],
             ),

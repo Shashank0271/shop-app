@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
             fontFamily: 'Lato',
+            //errorColor: Colors.red,
             colorScheme: ColorScheme.fromSwatch(
                 primarySwatch: Colors.purple, accentColor: Colors.orange),
             textTheme: const TextTheme(
