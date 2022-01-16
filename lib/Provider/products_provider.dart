@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_shop_app/Provider/product.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Products with ChangeNotifier {
   final List<Product> _items = [
@@ -48,16 +50,35 @@ class Products with ChangeNotifier {
     return _items.firstWhere((element) => element.id == id);
   }
 
-  void addProduct(Product value) {
-    _items.add(Product(
-      imageUrl: value.imageUrl,
-      description: value.description,
-      title: value.title,
-      price: value.price,
-      isFavorite: value.isFavorite,
-      id: DateTime.now().toString(),
-    ));
-    notifyListeners();
+  Future<void> addProduct(Product value) {
+    final url = Uri.parse(
+        'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products.json');
+    return http
+        .post(
+      url,
+      body: json.encode({
+        'title': value.title,
+        'id': value.id,
+        'description': value.description,
+        'price': value.price,
+        'imageUrl': value.imageUrl,
+        'isFavorite': value.isFavorite,
+      }),
+    )
+        .then((response) {
+      // print(json.decode(response.body));
+      _items.add(Product(
+        imageUrl: value.imageUrl,
+        description: value.description,
+        title: value.title,
+        price: value.price,
+        isFavorite: value.isFavorite,
+        id: json.decode(response.body)['name'],
+
+        ///the above is the database id
+      ));
+      notifyListeners();
+    });
   }
 
   void updateProduct(String id, Product modifiedProduct) {
