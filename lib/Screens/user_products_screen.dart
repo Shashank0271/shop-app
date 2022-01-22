@@ -23,35 +23,42 @@ class UserProductsScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: productData.items.length,
-        itemBuilder: (context, index) => ListTile(
-          title: Text(productData.items[index].title),
-          leading: CircleAvatar(
-            backgroundImage: NetworkImage(productData.items[index].imageUrl),
-          ),
-          trailing: SizedBox(
-            width: 100,
-            child: Row(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    Navigator.pushNamed(
-                      context,
-                      EditProductsScreen.routeName,
-                      arguments: productData.items[index].id,
-                    );
-                  },
-                  icon: const Icon(Icons.edit),
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                IconButton(
-                  onPressed: () {
-                    productData.deleteProduct(productData.items[index].id);
-                  },
-                  icon: Icon(Icons.delete, color: Theme.of(context).errorColor),
-                ),
-              ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          return Provider.of<Products>(context, listen: false)
+              .fetchAndSetProducts();
+        },
+        child: ListView.builder(
+          itemCount: productData.items.length,
+          itemBuilder: (context, index) => ListTile(
+            title: Text(productData.items[index].title),
+            leading: CircleAvatar(
+              backgroundImage: NetworkImage(productData.items[index].imageUrl),
+            ),
+            trailing: SizedBox(
+              width: 100,
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        EditProductsScreen.routeName,
+                        arguments: productData.items[index].id,
+                      );
+                    },
+                    icon: const Icon(Icons.edit),
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      productData.deleteProduct(productData.items[index].id);
+                    },
+                    icon:
+                        Icon(Icons.delete, color: Theme.of(context).errorColor),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
