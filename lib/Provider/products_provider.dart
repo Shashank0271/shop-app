@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:my_shop_app/Provider/product.dart';
 import 'package:http/http.dart' as http;
@@ -22,6 +24,7 @@ class Products with ChangeNotifier {
         'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products.json');
     try {
       var response = await http.get(url);
+      // print(response.statusCode);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
@@ -77,7 +80,7 @@ class Products with ChangeNotifier {
     int modIndex = _items.indexWhere((element) => element.id == id);
     final url = Uri.parse(
         'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json');
-    http.patch(url,
+    await http.patch(url,
         body: json.encode({
           'title': modifiedProduct.title,
           'description': modifiedProduct.description,
@@ -89,8 +92,23 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteProduct(String id) {
+  Future<void> deleteProduct(String id) async {
+    var existingProductIndex = _items.indexWhere((element) => element.id == id);
+    Product? existingProduct = _items[existingProductIndex];
     _items.removeWhere((element) => element.id == id);
     notifyListeners();
+    final url = Uri.parse(
+        'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json');
+    // ignore: unused_local_variable
+
+    final response = await http.delete(url);
+    print(response.statusCode);
+    if (response.statusCode >= 400) {
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+      // ignore: prefer_const_constructors
+      throw HttpException('Could not delete product');
+    }
+    existingProduct = null;
   }
 }

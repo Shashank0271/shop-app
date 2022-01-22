@@ -51,8 +51,17 @@ class UserProductsScreen extends StatelessWidget {
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   IconButton(
-                    onPressed: () {
-                      productData.deleteProduct(productData.items[index].id);
+                    onPressed: () async {
+                      try {
+                        productData.deleteProduct(productData.items[index].id);
+                      } catch (error) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                                content: Text(
+                          'Deleting failed',
+                          textAlign: TextAlign.center,
+                        )));
+                      }
                     },
                     icon:
                         Icon(Icons.delete, color: Theme.of(context).errorColor),
