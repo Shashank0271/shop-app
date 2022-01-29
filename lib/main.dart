@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
             textTheme: const TextTheme(
               headline6: TextStyle(color: Colors.white),
             )),
-        home: const ProductsOverviewScreen(),
+        home: ProductsOverviewScreen(),
         routes: {
           ProductDetailsScreen.routeName: (context) => ProductDetailsScreen(),
           CartScreen.routeName: (context) => CartScreen(),

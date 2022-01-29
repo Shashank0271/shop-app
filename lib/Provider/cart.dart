@@ -45,7 +45,8 @@ class Cart with ChangeNotifier {
       _items.putIfAbsent(
         productId,
         () => CartItem(
-            id: DateTime.now().toString(),
+            id: DateTime.now()
+                .toString(), //req in the dismissable widget as 'key'
             price: price,
             title: title,
             quantity: 1),
@@ -55,7 +56,6 @@ class Cart with ChangeNotifier {
   }
 
   void removeItem(String productId) {
-    ///called when the product is dismissed from the cart screen
     _items.remove(productId);
     notifyListeners();
   }

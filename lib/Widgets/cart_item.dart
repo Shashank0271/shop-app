@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:my_shop_app/Provider/cart.dart';
 import 'package:provider/provider.dart';
 
-class CartItem extends StatelessWidget {
+class CartItemWidget extends StatelessWidget {
   final String id;
   final String title;
   final int quantity;
   final double price;
   final String productId;
-  const CartItem(
+  const CartItemWidget(
       {required this.id,
       required this.title,
       required this.productId,
@@ -19,8 +19,11 @@ class CartItem extends StatelessWidget {
     return Dismissible(
       onDismissed: (direction) {
         Provider.of<Cart>(context, listen: false).removeItem(productId);
+
+        //<====
       },
-      key: ValueKey(id),
+//TODO : TRY AND REPLACE THIS WITH Datetime.now() instead of passing everything via constructor
+      key: ValueKey(DateTime.now()),
       direction: DismissDirection.endToStart,
       confirmDismiss: (direction) {
         return showDialog(
@@ -51,12 +54,7 @@ class CartItem extends StatelessWidget {
           },
         );
       },
-      background: Container(
-        color: Colors.red,
-        child: const Icon(Icons.delete),
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
-      ),
+
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
         child: Padding(
@@ -75,6 +73,12 @@ class CartItem extends StatelessWidget {
             trailing: Text('$quantity x'),
           ),
         ),
+      ),
+      background: Container(
+        color: Colors.red,
+        child: const Icon(Icons.delete),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
       ),
     );
   }
