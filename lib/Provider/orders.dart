@@ -34,7 +34,7 @@ class Orders with ChangeNotifier {
         var loadedOrder = OrderItem(
           id: key,
           amount: response[key]!['amount'],
-          products: response[key]!['products'],
+          products: response[key]!['products'], //ERROR
           dateTime: DateTime.parse(response[key]!['dateTime']),
         );
         _orders.add(loadedOrder);
