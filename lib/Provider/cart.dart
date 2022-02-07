@@ -37,19 +37,21 @@ class Cart with ChangeNotifier {
       _items.update(
           productId,
           (value) => CartItem(
-              price: value.price,
-              id: value.id,
-              title: value.title,
-              quantity: value.quantity + 1));
+                price: value.price,
+                id: value.id,
+                title: value.title,
+                quantity: value.quantity + 1,
+              ));
     } else {
       _items.putIfAbsent(
         productId,
         () => CartItem(
-            id: DateTime.now()
-                .toString(), //req in the dismissable widget as 'key'
-            price: price,
-            title: title,
-            quantity: 1),
+          id: DateTime.now()
+              .toString(), //req in the dismissable widget as 'key'
+          price: price,
+          title: title,
+          quantity: 1,
+        ),
       );
     }
     notifyListeners();

@@ -22,7 +22,7 @@ class CartItemWidget extends StatelessWidget {
 
         //<====
       },
-//TODO : TRY AND REPLACE THIS WITH Datetime.now() instead of passing everything via constructor
+//TODO : TRY AND REPLACE THIS WITH ProductID instead of passing everything via constructor
       key: ValueKey(DateTime.now()),
       direction: DismissDirection.endToStart,
       confirmDismiss: (direction) {

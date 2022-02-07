@@ -34,7 +34,16 @@ class Orders with ChangeNotifier {
         var loadedOrder = OrderItem(
           id: key,
           amount: response[key]!['amount'],
-          products: response[key]!['products'], //ERROR
+          products: (response[key]!['products']
+                  as List<dynamic>) //a list of maps , i.e. (e) is a map
+              .map(
+                (e) => CartItem(
+                    id: e['id'],
+                    title: e['title'],
+                    quantity: e['quantity'],
+                    price: e['price']),
+              )
+              .toList(),
           dateTime: DateTime.parse(response[key]!['dateTime']),
         );
         _orders.add(loadedOrder);

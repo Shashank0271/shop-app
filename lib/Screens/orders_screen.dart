@@ -13,24 +13,33 @@ class OrdersScreen extends StatefulWidget {
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
+  var _isLoading = false;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    setState(() {
+      _isLoading = true;
+    });
     Provider.of<Orders>(context, listen: false).fetchAndSetOrders();
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final orderItemData = Provider.of<Orders>(context);
-    return Scaffold(
-      appBar: AppBar(title: const Text('Your Orders')),
-      body: ListView.builder(
-        itemCount: orderItemData.orders.length,
-        itemBuilder: (context, index) => OrderItemWidget(
-          order: orderItemData.orders[index],
-        ),
-      ),
-      drawer: const AppDrawer(),
-    );
+    return _isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : Scaffold(
+            appBar: AppBar(title: const Text('Your Orders')),
+            body: ListView.builder(
+              itemCount: orderItemData.orders.length,
+              itemBuilder: (context, index) => OrderItemWidget(
+                order: orderItemData.orders[index],
+              ),
+            ),
+            drawer: const AppDrawer(),
+          );
   }
 }
