@@ -27,9 +27,13 @@ class Orders with ChangeNotifier {
         'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json');
     try {
       var resp = await http.get(url);
-      print(json.decode(resp.body));
       var response = json.decode(resp.body) as Map<String, dynamic>;
+      if (response == null) {
+        return;
+      }
       _orders = [];
+      List<OrderItem> loadedOrders = [];
+
       for (var key in response.keys) {
         var loadedOrder = OrderItem(
           id: key,
@@ -38,19 +42,21 @@ class Orders with ChangeNotifier {
                   as List<dynamic>) //a list of maps , i.e. (e) is a map
               .map(
                 (e) => CartItem(
-                    id: e['id'],
-                    title: e['title'],
-                    quantity: e['quantity'],
-                    price: e['price']),
+                  id: e['id'],
+                  title: e['title'],
+                  quantity: e['quantity'],
+                  price: e['price'],
+                ),
               )
               .toList(),
-          dateTime: DateTime.parse(response[key]!['dateTime']),
+          dateTime: DateTime.parse(response[key]!['datetime']),
         );
-        _orders.add(loadedOrder);
+        loadedOrders.add(loadedOrder);
       }
+      _orders = loadedOrders.reversed.toList();
       notifyListeners();
     } catch (error) {
-      print(error);
+      // print(error);
     }
   }
 

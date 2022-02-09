@@ -19,10 +19,8 @@ class CartItemWidget extends StatelessWidget {
     return Dismissible(
       onDismissed: (direction) {
         Provider.of<Cart>(context, listen: false).removeItem(productId);
-
-        //<====
       },
-//TODO : TRY AND REPLACE THIS WITH ProductID instead of passing everything via constructor
+//TODO : TRY AND REPLACE THIS WITH ProductID instead of passing id via constructor
       key: ValueKey(DateTime.now()),
       direction: DismissDirection.endToStart,
       confirmDismiss: (direction) {
