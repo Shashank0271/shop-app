@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'dart:async';
 import 'package:http/http.dart';
 
 const webapikey = 'AIzaSyBLsMl_60zUUiHUh-QO-3RDcM239AeEpuc';
@@ -10,6 +10,7 @@ class Auth extends ChangeNotifier {
   DateTime? _expiryDate;
   String? _token;
   String? _userId;
+  Timer? _authtimer;
   bool get isAuth {
     return token != null;
   }
@@ -33,6 +34,7 @@ class Auth extends ChangeNotifier {
     _userId = response['localId'];
     _expiryDate =
         DateTime.now().add(Duration(seconds: int.parse(response['expiresIn'])));
+    autoLogout();
     notifyListeners();
   }
 
@@ -60,5 +62,22 @@ class Auth extends ChangeNotifier {
         }));
 
     setParameters(httpresponse);
+  }
+
+  void logout() {
+    _userId = null;
+    _expiryDate = null;
+    _token = null;
+    if (_authtimer != null) {
+      _authtimer!.cancel();
+      _authtimer = null;
+    }
+    notifyListeners();
+  }
+
+  void autoLogout() {
+    final time = _expiryDate!.difference(DateTime.now()).inSeconds;
+    _authtimer = Timer(Duration(seconds: time), logout);
+    notifyListeners();
   }
 }
