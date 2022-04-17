@@ -18,14 +18,14 @@ class Product with ChangeNotifier {
     required this.price,
     this.isFavorite = false,
   });
-  Future<void> toggleFavoriteStatus(String authToken) async {
+  Future<void> toggleFavoriteStatus(String authToken, String userId) async {
     final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
+    final url = Uri.parse(
+        'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/userFavories/$userId/$id.json?auth=$authToken');
     try {
-      final response = await http.patch(
-          Uri.parse(
-              'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json?auth=$authToken'),
+      final response = await http.put(url,
           body: json.encode({
             'isFavorite': isFavorite,
           }));

@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:http/http.dart';
+
 const webapikey = 'AIzaSyBLsMl_60zUUiHUh-QO-3RDcM239AeEpuc';
 
 class Auth extends ChangeNotifier {
@@ -21,15 +23,11 @@ class Auth extends ChangeNotifier {
     return null;
   }
 
-  Future<void> signup(String email, String password) async {
-    var url = Uri.parse(
-        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$webapikey');
-    var httpresponse = await http.post(url,
-        body: json.encode({
-          'email': email,
-          'password': password,
-          'returnSecureToken': true,
-        }));
+  String? get userId {
+    return _userId;
+  }
+
+  void setParameters(Response httpresponse) {
     var response = jsonDecode(httpresponse.body);
     _token = response['idToken'];
     _userId = response['localId'];
@@ -38,15 +36,29 @@ class Auth extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> login(String email, String password) async {
-    var url = Uri.parse(
-        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$webapikey');
-    var response = await http.post(url,
+  Future<void> signup(String email, String password) async {
+    final url = Uri.parse(
+        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$webapikey');
+    final httpresponse = await http.post(url,
         body: json.encode({
           'email': email,
           'password': password,
           'returnSecureToken': true,
         }));
-    notifyListeners();
+
+    setParameters(httpresponse);
+  }
+
+  Future<void> login(String email, String password) async {
+    var url = Uri.parse(
+        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$webapikey');
+    var httpresponse = await http.post(url,
+        body: json.encode({
+          'email': email,
+          'password': password,
+          'returnSecureToken': true,
+        }));
+
+    setParameters(httpresponse);
   }
 }

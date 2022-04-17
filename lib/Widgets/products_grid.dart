@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 class ProductsGrid extends StatelessWidget {
   final bool showFavoritesOnly;
   const ProductsGrid(this.showFavoritesOnly);
+
   @override
   Widget build(BuildContext context) {
     final productsData = Provider.of<Products>(context);

@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:my_shop_app/Provider/product.dart';
@@ -5,8 +6,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class Products with ChangeNotifier {
-  final String? authtoken;
-  Products(this.authtoken);
+  final String? authToken;
+  final String? userId;
+  Products(this.authToken, this.userId);
   List<Product> _items = [];
   List<Product> get items {
     return [..._items];
@@ -20,17 +22,35 @@ class Products with ChangeNotifier {
     return _items.firstWhere((element) => element.id == id);
   }
 
-  Future<void> fetchAndSetProducts() async {
-    final url = Uri.parse(
-        'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authtoken');
+  Future<void> fetchAndSetProducts(bool filter) async {
+    Uri url;
+    if (filter) {
+      url = Uri.parse(
+          'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken&orderBy="userId"&equalTo="$userId"');
+    } else {
+      url = Uri.parse(
+          'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken');
+    }
+
     try {
       var response = await http.get(url);
 
       final extractedData = json.decode(response.body);
+      // ignore: avoid_print
+      print(extractedData);
       //this is a map with string as key and each value is a map with different product properties as keys
-      if (extractedData == null) return Future.value(null);
-
+      if (extractedData == null ||
+          (extractedData as Map<String, dynamic>).isEmpty) {
+        _items = [];
+        notifyListeners();
+        return Future.value(null);
+      }
+      final surl = Uri.parse(
+          'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/userFavories/$userId.json?auth=$authToken');
+      final httpfav = await http.get(surl);
+      final favresponse = json.decode(httpfav.body);
       final List<Product> loadedProducts = [];
+
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
           title: prodData['title'],
@@ -38,7 +58,11 @@ class Products with ChangeNotifier {
           id: prodId,
           description: prodData['description'],
           price: prodData['price'],
-          isFavorite: prodData['isFavorite'],
+          isFavorite: favresponse == null
+              ? false
+              : favresponse[prodId] == null
+                  ? false
+                  : favresponse[prodId]['isFavorite'],
         ));
       });
       _items = loadedProducts;
@@ -50,7 +74,7 @@ class Products with ChangeNotifier {
 
   Future<void> addProduct(Product value) async {
     final url = Uri.parse(
-        'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authtoken');
+        'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken');
     try {
       final response = await http.post(
         url,
@@ -60,7 +84,7 @@ class Products with ChangeNotifier {
           'description': value.description,
           'price': value.price,
           'imageUrl': value.imageUrl,
-          'isFavorite': value.isFavorite,
+          'userId': userId,
         }),
       );
       _items.add(Product(
@@ -83,13 +107,12 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(String id, Product modifiedProduct) async {
     int modIndex = _items.indexWhere((element) => element.id == id);
     final url = Uri.parse(
-        'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json?auth=$authtoken');
+        'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json?auth=$authToken');
     await http.patch(url,
         body: json.encode({
           'title': modifiedProduct.title,
           'description': modifiedProduct.description,
           'imageUrl': modifiedProduct.imageUrl,
-          // 'isFavorite': modifiedProduct.isFavorite, since this wont change
           'price': modifiedProduct.price,
         }));
     _items[modIndex] = modifiedProduct; //in the local memory
@@ -104,10 +127,9 @@ class Products with ChangeNotifier {
     notifyListeners();
 
     final url = Uri.parse(
-        'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json?auth=$authtoken');
+        'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json?auth=$authToken');
     final response = await http.delete(url);
 
-    print(response.statusCode);
     if (response.statusCode >= 400) {
       _items.insert(existingProductIndex, existingProduct);
       notifyListeners();
