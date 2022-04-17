@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_shop_app/Screens/products_overview_screen.dart';
@@ -37,13 +36,13 @@ class MyApp extends StatelessWidget {
             textTheme: const TextTheme(
               headline6: TextStyle(color: Colors.white),
             )),
-        home: ProductsOverviewScreen(),
+        home: const ProductsOverviewScreen(),
         routes: {
           ProductDetailsScreen.routeName: (context) => ProductDetailsScreen(),
-          CartScreen.routeName: (context) => CartScreen(),
-          OrdersScreen.routeName: (context) => OrdersScreen(),
+          CartScreen.routeName: (context) => const CartScreen(),
+          OrdersScreen.routeName: (context) => const OrdersScreen(),
           UserProductsScreen.routeName: (context) => UserProductsScreen(),
-          EditProductsScreen.routeName: (context) => EditProductsScreen(),
+          EditProductsScreen.routeName: (context) => const EditProductsScreen(),
         },
       ),
       providers: [

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:my_shop_app/Provider/product.dart';
 import 'package:http/http.dart' as http;
@@ -24,11 +23,11 @@ class Products with ChangeNotifier {
         'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products.json');
     try {
       var response = await http.get(url);
-      // print(response.statusCode);
-      final extractedData =
-          json.decode(response.body); // as Map<String, dynamic>;
+
+      final extractedData = json.decode(response.body);
+      //this is a map with string as key and each value is a map with different product properties as keys
       if (extractedData == null) return Future.value(null);
-      // print(extractedData);
+
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
@@ -43,7 +42,7 @@ class Products with ChangeNotifier {
       _items = loadedProducts;
       notifyListeners();
     } catch (error) {
-      throw (error);
+      rethrow;
     }
   }
 
@@ -74,8 +73,8 @@ class Products with ChangeNotifier {
       ));
       notifyListeners();
     } catch (error) {
-      print(error.toString());
-      throw error;
+      // print(error.toString());
+      rethrow;
     }
   }
 
@@ -98,13 +97,14 @@ class Products with ChangeNotifier {
   Future<void> deleteProduct(String id) async {
     var existingProductIndex = _items.indexWhere((element) => element.id == id);
     Product? existingProduct = _items[existingProductIndex];
+
     _items.removeWhere((element) => element.id == id);
     notifyListeners();
+
     final url = Uri.parse(
         'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json');
-    // ignore: unused_local_variable
-
     final response = await http.delete(url);
+
     print(response.statusCode);
     if (response.statusCode >= 400) {
       _items.insert(existingProductIndex, existingProduct);
