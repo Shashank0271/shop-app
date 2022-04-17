@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:my_shop_app/Screens/auth_screen.dart';
 import 'package:my_shop_app/Screens/products_overview_screen.dart';
 import 'package:my_shop_app/Screens/product_details_screen.dart';
 import 'package:my_shop_app/Screens/user_products_screen.dart';
@@ -10,6 +11,7 @@ import 'package:my_shop_app/Screens/cart_screen.dart';
 import 'package:my_shop_app/Provider/orders.dart';
 import 'package:my_shop_app/Screens/orders_screen.dart';
 import 'Screens/edit_products_screen.dart';
+import 'Provider/auth_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,29 +28,42 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-            fontFamily: 'Lato',
-            //errorColor: Colors.red,
-            colorScheme: ColorScheme.fromSwatch(
-                primarySwatch: Colors.purple, accentColor: Colors.orange),
-            textTheme: const TextTheme(
-              headline6: TextStyle(color: Colors.white),
-            )),
-        home: const ProductsOverviewScreen(),
-        routes: {
-          ProductDetailsScreen.routeName: (context) => ProductDetailsScreen(),
-          CartScreen.routeName: (context) => const CartScreen(),
-          OrdersScreen.routeName: (context) => const OrdersScreen(),
-          UserProductsScreen.routeName: (context) => UserProductsScreen(),
-          EditProductsScreen.routeName: (context) => const EditProductsScreen(),
-        },
+      child: Consumer<Auth>(
+        builder: (ctx, auth, _) => MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+              fontFamily: 'Lato',
+              errorColor: Colors.red,
+              colorScheme: ColorScheme.fromSwatch(
+                  primarySwatch: Colors.purple, accentColor: Colors.orange),
+              textTheme: const TextTheme(
+                headline6: TextStyle(color: Colors.white),
+              )),
+          home:
+              auth.isAuth ? const ProductsOverviewScreen() : const AuthScreen(),
+          routes: {
+            ProductDetailsScreen.routeName: (context) => ProductDetailsScreen(),
+            CartScreen.routeName: (context) => const CartScreen(),
+            OrdersScreen.routeName: (context) => const OrdersScreen(),
+            UserProductsScreen.routeName: (context) => UserProductsScreen(),
+            EditProductsScreen.routeName: (context) =>
+                const EditProductsScreen(),
+            ProductsOverviewScreen.routeName: (context) =>
+                const ProductsOverviewScreen()
+          },
+        ),
       ),
       providers: [
-        ChangeNotifierProvider(create: (context) => Products()),
+        ChangeNotifierProvider(create: (context) => Auth()),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          update: (_, auth, prevproduct) => Products(auth.token),
+          create: (context) => Products(null),
+        ),
         ChangeNotifierProvider(create: (context) => Cart()),
-        ChangeNotifierProvider(create: (context) => Orders()),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          update: (context, auth, previous) => Orders(auth.token),
+          create: (context) => Orders(null),
+        ),
       ],
     );
   }

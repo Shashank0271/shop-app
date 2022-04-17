@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class Products with ChangeNotifier {
+  final String? authtoken;
+  Products(this.authtoken);
   List<Product> _items = [];
   List<Product> get items {
     return [..._items];
@@ -20,7 +22,7 @@ class Products with ChangeNotifier {
 
   Future<void> fetchAndSetProducts() async {
     final url = Uri.parse(
-        'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products.json');
+        'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authtoken');
     try {
       var response = await http.get(url);
 
@@ -48,7 +50,7 @@ class Products with ChangeNotifier {
 
   Future<void> addProduct(Product value) async {
     final url = Uri.parse(
-        'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products.json');
+        'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authtoken');
     try {
       final response = await http.post(
         url,
@@ -81,7 +83,7 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(String id, Product modifiedProduct) async {
     int modIndex = _items.indexWhere((element) => element.id == id);
     final url = Uri.parse(
-        'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json');
+        'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json?auth=$authtoken');
     await http.patch(url,
         body: json.encode({
           'title': modifiedProduct.title,
@@ -102,7 +104,7 @@ class Products with ChangeNotifier {
     notifyListeners();
 
     final url = Uri.parse(
-        'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json');
+        'https://flash-chat-94daf-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json?auth=$authtoken');
     final response = await http.delete(url);
 
     print(response.statusCode);

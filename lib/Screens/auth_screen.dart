@@ -1,11 +1,17 @@
+// ignore_for_file: constant_identifier_names
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:my_shop_app/Provider/auth_provider.dart';
 
 enum AuthMode { Signup, Login }
 
 class AuthScreen extends StatelessWidget {
   static const routeName = '/auth';
+
+  const AuthScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +104,7 @@ class _AuthCardState extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
-  void _submit() {
+  void _submit() async {
     if (!_formKey.currentState!.validate()) {
       // Invalid!
       return;
@@ -109,8 +115,12 @@ class _AuthCardState extends State<AuthCard> {
     });
     if (_authMode == AuthMode.Login) {
       // Log user in
+      await Provider.of<Auth>(context, listen: false)
+          .login(_authData['email']!, _authData['password']!);
     } else {
       // Sign user up
+      await Provider.of<Auth>(context, listen: false)
+          .signup(_authData['email']!, _authData['password']!);
     }
     setState(() {
       _isLoading = false;
@@ -205,7 +215,7 @@ class _AuthCardState extends State<AuthCard> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 30.0, vertical: 8.0),
                       primary: Theme.of(context).colorScheme.primary,
-                      onPrimary: Theme.of(context).colorScheme.primary,
+                      onPrimary: Theme.of(context).colorScheme.secondary,
                     ),
                   ),
                 TextButton(

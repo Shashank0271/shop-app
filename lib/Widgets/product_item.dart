@@ -3,6 +3,7 @@ import 'package:my_shop_app/Provider/cart.dart';
 import 'package:my_shop_app/Screens/product_details_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:my_shop_app/Provider/product.dart';
+import 'package:my_shop_app/Provider/auth_provider.dart';
 
 class ProductItem extends StatelessWidget {
   const ProductItem({Key? key}) : super(key: key);
@@ -10,6 +11,7 @@ class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
+    final token = Provider.of<Auth>(context, listen: false).token;
     final cart = Provider.of<Cart>(context, listen: true);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
@@ -30,7 +32,7 @@ class ProductItem extends StatelessWidget {
                           : Icons.favorite_border,
                     ),
                     onPressed: () {
-                      product.toggleFavoriteStatus();
+                      product.toggleFavoriteStatus(token!);
                     },
                     color: Theme.of(context).colorScheme.secondary,
                   )),
