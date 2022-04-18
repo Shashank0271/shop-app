@@ -47,7 +47,7 @@ class ProductItem extends StatelessWidget {
             onPressed: () {
               cart.addItem(product.id, product.price, product.title);
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              //undo option after adding to cart :
+
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: const Text(
                   'Item added to cart',
